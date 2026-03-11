@@ -25,7 +25,6 @@
 .iconBox {
   width: 72px;
   height: 72px;
-  background: #E9B824;
   border-radius: 35px;
   display: flex;
   align-items: center;
@@ -36,7 +35,6 @@
 }
 
 .iconCard:hover .iconBox {
-  background: #d4a820;
   box-shadow: 0 4px 12px rgba(233, 184, 36, 0.3);
 }
 

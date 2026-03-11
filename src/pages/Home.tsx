@@ -1,6 +1,5 @@
 import { ImageSlider, ServiceIcon, ServiceCard } from '../components';
 import { services, sliderImages } from '../data';
-import type { Service } from '../types';
 import '../App.css';
 import { useNavigate, useOutletContext } from 'react-router';
 import { useEffect, useState } from 'react';

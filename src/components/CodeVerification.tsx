@@ -25,14 +25,14 @@ const CodeVerification = ({ isOpen, onClose }: CodeVerificationProps) => {
   const [loading, setLoading] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 5)
+    const value = e.target.value.replace(/\D/g, '')
     setCode(value)
     if (error) setError('')
   }
 
   const handleVerify = async () => {
-    if (code.length !== 5) {
-      setError('Please enter a 5-digit code')
+    if (!code || code.length === 0) {
+      setError('Please enter your check-in code')
       return
     }
 
@@ -47,7 +47,8 @@ const CodeVerification = ({ isOpen, onClose }: CodeVerificationProps) => {
         // Store token in session
         const session = {
           token: response.data.token,
-          logoURL: url
+          logoURL: url,
+          hotel_name: response.data.hotel_name
         }
         localStorage.setItem('session', JSON.stringify(session))
         
@@ -101,7 +102,7 @@ const CodeVerification = ({ isOpen, onClose }: CodeVerificationProps) => {
               Verification Required
             </Heading>
             <Text fontSize="md" color="green.50" maxW="400px" mx="auto">
-              Please enter your 5-digit check-in code to continue
+              Please enter your check-in code to continue
             </Text>
           </Box>
 
@@ -116,13 +117,12 @@ const CodeVerification = ({ isOpen, onClose }: CodeVerificationProps) => {
                   inputMode="numeric"
                   value={code}
                   onChange={handleInputChange}
-                  placeholder="00000"
-                  maxLength={5}
+                  placeholder="Enter code"
                   autoFocus
                   size="xl"
                   fontSize="5xl"
                   textAlign="center"
-                  letterSpacing="0.6em"
+                  letterSpacing="0.3em"
                   fontWeight="bold"
                   height="120px"
                   variant="outline"
@@ -174,7 +174,7 @@ const CodeVerification = ({ isOpen, onClose }: CodeVerificationProps) => {
                 backgroundColor={'darkgreen'}
                 width="full"
                 loading={loading}
-                disabled={code.length !== 5}
+                disabled={!code || code.length === 0}
                 height="60px"
                 fontSize="lg"
                 fontWeight="bold"

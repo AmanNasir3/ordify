@@ -22,7 +22,7 @@ import { RadioGroup } from '@chakra-ui/react';
 import { Accordion } from '@chakra-ui/react';
 import { IoClose } from "react-icons/io5";
 import { getSubcategoriesByCategory } from '../services/api/Instance';
-
+import DefaultImage from '../assets/images.png';
 
 // HousekeepingDetails component
 const HousekeepingDetails = ({ subCategory, category }: { subCategory: any; category: any }) => {
@@ -118,11 +118,12 @@ const HousekeepingDetails = ({ subCategory, category }: { subCategory: any; cate
   if (!subCategory || departments.length === 0) {
     return <div className={styles.loading}>Loading...</div>;
   }
+console.log({category});
 
   return (
     <div className={styles.detailsPage}>
       <div className={styles.headerSection}>
-        <img src={category?.image} alt={category?.name} className={styles.headerImg} />
+        <img src={category?.image ?? DefaultImage} alt={category?.name} className={styles.headerImg} />
         <h1 className={styles.title}>{category?.name}</h1>
       </div>
       <div className={layoutStyles.detailsLayout}>

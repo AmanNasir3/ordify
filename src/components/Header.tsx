@@ -1,28 +1,67 @@
-import { IoMoonOutline, IoMenuOutline } from 'react-icons/io5';
 import styles from './Header.module.css';
-import LogoIcon from '../assets/icon.png';
 import useSession from '../helper/useSession';
-import { useState } from 'react';
-import { Image } from '@chakra-ui/react';
- 
+import { useState, useEffect } from 'react';
+import { Image, Flex, Text, Box } from '@chakra-ui/react';
+import { useLocation, useNavigate } from 'react-router';
+import { IoArrowBack } from 'react-icons/io5';
 
+interface HeaderProps {
+  verificationComplete?: boolean
+}
 
-const Header = () => {
-   const [session] = useState(() => useSession('session', null))
+const Header = ({ verificationComplete }: HeaderProps) => {
+   const [session, setSession] = useState(() => useSession('session', null))
+   const location = useLocation()
+   const navigate = useNavigate()
+   const isServiceDetailPage = location.pathname.startsWith('/service/')
+
+  useEffect(() => {
+    if (verificationComplete) {
+      const updatedSession = useSession('session', null)
+      setSession(updatedSession)
+    }
+  }, [verificationComplete])
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-      {session?.logoURL ? (
-          <Image
-            src={session.logoURL}
-            alt="Hotel Logo"
-            boxSize="70px"
-            objectFit="contain"
-            mr="3"
-          /> 
-        ):<div />}
+        <Flex alignItems="center" gap={3}>
+          {isServiceDetailPage && (
+            <Box 
+              as="button" 
+              onClick={() => navigate('/')}
+              color="white"
+              fontSize="24px"
+              cursor="pointer"
+              _hover={{ opacity: 0.8 }}
+              display="flex"
+              alignItems="center"
+              aria-label="Go back"
+            >
+              <IoArrowBack />
+            </Box>
+          )}
+          {session?.logoURL ? (
+            <Image
+              src={session.logoURL}
+              alt="Hotel Logo"
+              boxSize="70px"
+              objectFit="contain"
+            /> 
+          ) : <div />}
+          {session?.hotel_name && (
+            <Text 
+              color="white" 
+              fontSize={{ base: 'md', md: 'lg' }} 
+              fontWeight="600"
+              lineHeight="1.2"
+            >
+              {session.hotel_name}
+            </Text>
+          )}
+        </Flex>
         <div className={styles.actions}>
-          <button className={styles.iconBtn} aria-label="Toggle dark mode">
+          {/* <button className={styles.iconBtn} aria-label="Toggle dark mode">
             <IoMoonOutline />
           </button>
           <button className={styles.langBtn} aria-label="Change language">
@@ -34,7 +73,7 @@ const Header = () => {
           </button>
           <button className={styles.menuBtn} aria-label="Open menu">
             <IoMenuOutline />
-          </button>
+          </button> */}
         </div>
       </div>
     </header>

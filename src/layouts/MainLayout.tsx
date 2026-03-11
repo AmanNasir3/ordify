@@ -37,7 +37,7 @@ const MainLayout = () => {
   return (
     <>
       <CodeVerification isOpen={showVerification} onClose={handleVerificationClose} />
-      <Header />
+      <Header verificationComplete={verificationComplete} />
       <Outlet context={{ verificationComplete, reopenVerification }} />
     </>
   )
