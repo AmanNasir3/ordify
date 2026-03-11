@@ -2,12 +2,16 @@ import { ImageSlider, ServiceIcon, ServiceCard } from '../components';
 import { services, sliderImages } from '../data';
 import type { Service } from '../types';
 import '../App.css';
-import { useNavigate } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
 import { useEffect, useState } from 'react';
 import { getCategories } from '../services/api/Instance';
 
 const Home = () => {
   const navigate = useNavigate()
+  const { verificationComplete, reopenVerification } = useOutletContext<{ 
+    verificationComplete: boolean
+    reopenVerification: () => void 
+  }>()
   const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -33,6 +37,11 @@ const Home = () => {
 
       try {
         const response = await getCategories()
+        if (response.status === 401) {
+          // Token is invalid, reopen verification modal
+          reopenVerification()
+          return
+        }
         if (response.status === 200 && response.data.categories) {
           setCategories(response.data.categories)
         }
@@ -44,7 +53,7 @@ const Home = () => {
     }
 
     fetchCategories()
-  }, [])
+  }, [verificationComplete])
 
   const handleServiceClick = (category: any) => {
     console.log('Selected service:', category);

@@ -4,6 +4,7 @@ import { Header, CodeVerification } from '../components'
 
 const MainLayout = () => {
   const [showVerification, setShowVerification] = useState(false)
+  const [verificationComplete, setVerificationComplete] = useState(false)
 
   useEffect(() => {
     // Check if user already has a valid token
@@ -24,15 +25,20 @@ const MainLayout = () => {
 
   const handleVerificationClose = () => {
     setShowVerification(false)
-    // Reload page to fetch categories with new token
-    window.location.reload()
+    // Trigger refetch in child components without reloading page
+    setVerificationComplete(true)
+  }
+
+  const reopenVerification = () => {
+    setShowVerification(true)
+    setVerificationComplete(false)
   }
 
   return (
     <>
       <CodeVerification isOpen={showVerification} onClose={handleVerificationClose} />
       <Header />
-      <Outlet />
+      <Outlet context={{ verificationComplete, reopenVerification }} />
     </>
   )
 }
