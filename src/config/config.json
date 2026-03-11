@@ -1,0 +1,7 @@
+{
+  "production": false,
+  "productionUrl": "http://api.pakhms.com",
+  "devlopmentUrl": "http://localhost:3001",
+  "devlopmentUrlV2": "https://go.staging-api.pakhms.com/api/v1",
+  "devlopmentUrlV3": "http://127.0.0.1:8000"
+}

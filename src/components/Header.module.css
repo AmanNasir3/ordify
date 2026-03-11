@@ -1,0 +1,199 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #36454F;
+  height: 81px;
+  padding: 0 16px;
+}
+
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.logoImg {
+  height: 60px;
+  max-width:355px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .logoImg {
+    height: 45px;
+    max-width: 158px;
+  }
+}
+
+@media (min-width: 768px) {
+  .logoImg {
+    height: 60px;
+    max-width: 355px;
+  }
+}
+
+.logo {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.logo:hover {
+  opacity: 0.9;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 22px;
+}
+
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.langBtn {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding: 0;
+}
+
+.langBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.flagIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.menuBtn {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 24px;
+}
+
+.menuBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile: 320px and up */
+@media (min-width: 320px) {
+  .logo {
+    max-width: 180px;
+  }
+}
+
+/* Small phones */
+@media (min-width: 375px) {
+  .logo {
+    font-size: 15px;
+    max-width: 220px;
+  }
+}
+
+/* Larger phones */
+@media (min-width: 414px) {
+  .header {
+    padding: 0 20px;
+  }
+  
+  .logo {
+    font-size: 16px;
+    max-width: 260px;
+  }
+  
+  .actions {
+    gap: 10px;
+  }
+  
+  .iconBtn,
+  .langBtn,
+  .menuBtn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .iconBtn {
+    font-size: 24px;
+  }
+  
+  .menuBtn {
+    font-size: 26px;
+  }
+  
+  .flagIcon {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* Tablets and up */
+@media (min-width: 768px) {
+  .header {
+    height: 81px;
+  }
+  
+  .logo {
+    font-size: 17px;
+    max-width: 350px;
+  }
+  
+  .actions {
+    gap: 12px;
+  }
+  
+  .iconBtn,
+  .langBtn,
+  .menuBtn {
+    width: 44px;
+    height: 44px;
+  }
+}

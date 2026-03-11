@@ -1,0 +1,118 @@
+.sliderWrapper {
+  width: 100%;
+  position: relative;
+  background: #ffffff;
+}
+
+.swiper {
+  width: 100%;
+  height: 200px;
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+}
+
+.slideImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Pagination container */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+  background: #ffffff;
+}
+
+/* Pagination bullets */
+.bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bulletActive {
+  background: #1e1e2f;
+  width: 8px;
+  height: 8px;
+}
+
+/* Small phones: 320px - 374px */
+@media (min-width: 320px) {
+  .swiper {
+    height: 180px;
+  }
+  
+  .pagination {
+    padding: 10px 0;
+  }
+}
+
+/* Medium phones: 375px - 413px */
+@media (min-width: 375px) {
+  .swiper {
+    height: 210px;
+  }
+}
+
+/* Larger phones: 414px+ */
+@media (min-width: 414px) {
+  .swiper {
+    height: 240px;
+  }
+  
+  .bullet {
+    width: 9px;
+    height: 9px;
+  }
+  
+  .bulletActive {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+/* Phablets */
+@media (min-width: 480px) {
+  .swiper {
+    height: 280px;
+  }
+}
+
+/* Small tablets */
+@media (min-width: 600px) {
+  .swiper {
+    height: 320px;
+  }
+}
+
+/* Tablets */
+@media (min-width: 768px) {
+  .swiper {
+    height: 380px;
+  }
+  
+  .pagination {
+    padding: 14px 0;
+  }
+  
+  .bullet {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .bulletActive {
+    width: 10px;
+    height: 10px;
+  }
+}
