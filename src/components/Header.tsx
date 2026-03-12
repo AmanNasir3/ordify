@@ -1,35 +1,35 @@
-import styles from './Header.module.css';
-import useSession from '../helper/useSession';
-import { useState, useEffect } from 'react';
-import { Image, Flex, Text, Box } from '@chakra-ui/react';
-import { useLocation, useNavigate } from 'react-router';
-import { IoArrowBack } from 'react-icons/io5';
+import styles from "./Header.module.css";
+import useSession from "../helper/useSession";
+import { useState, useEffect } from "react";
+import { Image, Flex, Text, Box } from "@chakra-ui/react";
+import { useLocation, useNavigate } from "react-router";
+import { IoArrowBack } from "react-icons/io5";
 
 interface HeaderProps {
-  verificationComplete?: boolean
+  verificationComplete?: boolean;
 }
 
 const Header = ({ verificationComplete }: HeaderProps) => {
-   const [session, setSession] = useState(() => useSession('session', null))
-   const location = useLocation()
-   const navigate = useNavigate()
-   const isServiceDetailPage = location.pathname.startsWith('/service/')
+  const [session, setSession] = useState(() => useSession("session", null));
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isServiceDetailPage = location.pathname.startsWith("/service/");
 
   useEffect(() => {
     if (verificationComplete) {
-      const updatedSession = useSession('session', null)
-      setSession(updatedSession)
+      const updatedSession = useSession("session", null);
+      setSession(updatedSession);
     }
-  }, [verificationComplete])
-  console.log("Session in Header:", session)
+  }, [verificationComplete]);
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
         <Flex alignItems="center" gap={3}>
           {isServiceDetailPage && (
-            <Box 
-              as="button" 
-              onClick={() => navigate('/')}
+            <Box
+              as="button"
+              onClick={() => navigate("/")}
               color="white"
               fontSize="24px"
               cursor="pointer"
@@ -47,12 +47,14 @@ const Header = ({ verificationComplete }: HeaderProps) => {
               alt="Hotel Logo"
               boxSize="70px"
               objectFit="contain"
-            /> 
-          ) : <div />}
+            />
+          ) : (
+            <div />
+          )}
           {session?.hotel_name && (
-            <Text 
-              color="white" 
-              fontSize={{ base: 'md', md: 'lg' }} 
+            <Text
+              color="white"
+              fontSize={{ base: "md", md: "lg", lg: "xl" }}
               fontWeight="600"
               lineHeight="1.2"
             >

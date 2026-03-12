@@ -1,8 +1,41 @@
 .detailsLayout {
   display: flex;
-  gap: 32px;
+  gap: 40px;
   margin: 0 auto;
-  padding: 10px 20px;
+  padding: 40px 50px;
+  max-width: 1600px;
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .rightPanel {
@@ -14,47 +47,56 @@
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
+  animation: slideInRight 0.8s ease-out 0.4s both;
 }
 
 .departmentsSidebar {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(30,30,47,0.06);
-  min-width: 220px;
-  max-width: 260px;
-  padding: 24px 0;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(30,30,47,0.08);
+  min-width: 240px;
+  max-width: 280px;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   height: fit-content;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  animation: slideInLeft 0.8s ease-out 0.3s both;
 }
 
 .departmentBtn {
   background: none;
   border: none;
   text-align: left;
-  padding: 12px 24px;
+  padding: 14px 20px;
   font-size: 1rem;
-  color: #222;
+  color: #555;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
+  border-radius: 10px;
+  transition: all 0.3s ease;
   position: relative;
+  font-weight: 500;
+  border-left: 4px solid transparent;
 }
 
 .departmentBtn:hover:not(.selected) {
-  background: #f7fafc;
-  color: #2563eb;
+  background: #f0f4ff;
+  color: #667eea;
+  border-left-color: #667eea;
+  transform: translateX(4px);
 }
 
 .departmentBtn.selected {
-  background: #2563eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   font-weight: 600;
+  border-left-color: #fff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .departmentBtn.selected:hover {
-  background: #1e40af;
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .optionsPanel {
@@ -75,17 +117,18 @@
 }
 
 .selectedOption {
-  background: #1e1e2f;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 0.98rem;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.95rem;
   font-weight: 500;
-  margin-right: 4px;
-  margin-bottom: 4px;
+  margin-right: 6px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
 }
 
 .selectedOption .removeBtn {
@@ -118,19 +161,21 @@
 
 .checkbox {
   margin-right: 12px;
-  accent-color: #2c5aa0;
+  accent-color: #667eea;
   width: 20px;
   height: 20px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
+  border-radius: 4px;
 }
 
 .checkbox:checked {
-  accent-color: #2563eb;
+  accent-color: #667eea;
 }
 
 .checkbox:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
 }
 
 @media (max-width: 900px) {

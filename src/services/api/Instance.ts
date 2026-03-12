@@ -1,8 +1,6 @@
 import axios from "axios";
 import config from "../../Config/config.json";
 import { clearLocalStorage } from "../../helper/logout";
-import useSession from "../../helper/useSession";
-const slug = useSession("hotel_slug", null);
 
 export const baseURL = config?.production
   ? config?.productionUrl
@@ -34,16 +32,17 @@ Instance.interceptors.response.use(
   (response: any) => {
     if (response.status === 401 && response.data.redirect) {
       clearLocalStorage();
-      window.location.href = `/${slug}/login`;
+      window.location.reload();
     } else {
       return response;
     }
   },
   (error) => {
-    if (error.response.status === 401 && error.response.data.redirect) {
+    if (error.response?.status === 401) {
       clearLocalStorage();
-      window.location.href = `/${slug}/login`;
+      window.location.reload();
     }
+    return Promise.reject(error);
   },
 );
 
