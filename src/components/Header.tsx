@@ -21,7 +21,7 @@ const Header = ({ verificationComplete }: HeaderProps) => {
       setSession(updatedSession)
     }
   }, [verificationComplete])
-
+  console.log("Session in Header:", session)
   return (
     <header className={styles.header}>
       <div className={styles.container}>
