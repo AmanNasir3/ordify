@@ -30,24 +30,15 @@ const ServiceCard = ({ service, onClick }: ServiceCardProps) => {
           className={styles.image}
           loading="lazy"
         />
-        {service.icon && (
+        {/* {service.icon && (
           <div className={styles.iconBadge}>
             <img src={service.icon} alt="" className={styles.badgeIcon} />
           </div>
-        )}
+        )} */}
       </div>
       <div className={styles.content}>
         <h3 className={styles.title}>{service.name}</h3>
-        <div className={styles.rating}>
-          <div className={styles.stars}>
-            <IoStarOutline />
-            <IoStarOutline />
-            <IoStarOutline />
-            <IoStarOutline />
-            <IoStarOutline />
-          </div>
-          <span className={styles.reviewText}>Not reviewed yet</span>
-        </div>
+         
       </div>
     </article>
   );

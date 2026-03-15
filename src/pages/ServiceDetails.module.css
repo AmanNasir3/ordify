@@ -42,7 +42,6 @@
   background: linear-gradient(180deg, #f7f8fa 0%, #f0f2f8 100%);
   min-height: 100vh;
   padding-bottom: 32px;
-  scroll-behavior: smooth;
 }
 
 .headerSection {

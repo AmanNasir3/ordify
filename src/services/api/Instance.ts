@@ -63,6 +63,13 @@ export const getCategories = () => {
   });
 };
 
+export const getCarouselImages = () => {
+  return Instance({
+    method: "GET",
+    url: "/ordify/carousel",
+  });
+};
+
 export const getSubcategoriesByCategory = (categoryId: string) => {
   return Instance({
     method: "GET",
