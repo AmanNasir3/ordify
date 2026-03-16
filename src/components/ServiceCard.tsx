@@ -35,6 +35,9 @@ const ServiceCard = ({ service, onClick }: ServiceCardProps) => {
             <img src={service.icon} alt="" className={styles.badgeIcon} />
           </div>
         )} */}
+        <div className={styles.iconBadge}>
+          <IoStarOutline size={22} color="#e9b824" />
+        </div>
       </div>
       <div className={styles.content}>
         <h3 className={styles.title}>{service.name}</h3>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import styles from "./ServiceDetails.module.css";
 import layoutStyles from "./ServiceDetailsLayout.module.css";
 import { getSubcategoriesByCategory } from "../services/api/Instance";
-import { HousekeepingDetails } from "./components/HousekeepingDetails";
+import { HousekeepingDetails } from "./components/HouseKeepingDetails";
 import { NearbyAttractionsDetails } from "./components/NearbyAttractions";
 import { RoomServiceDetails } from "./components/RoomServiceDetails";
 
@@ -38,7 +38,7 @@ const ServiceDetails = () => {
   }
 
   if (slug === "nearby-attractions") {
-    return <NearbyAttractionsDetails service={subCategory} />;
+    return <NearbyAttractionsDetails service={subCategory} category={category} />;
   }
 
   return (

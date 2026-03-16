@@ -15,7 +15,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
+    setLoading(true);
     const fetchCategories = async () => {
       // Check if token exists before making API call
       const session = localStorage.getItem("session");

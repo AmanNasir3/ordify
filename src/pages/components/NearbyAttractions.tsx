@@ -1,10 +1,9 @@
 import styles from "../ServiceDetails.module.css";
 
-export const NearbyAttractionsDetails = ({ service }: { service: any }) => {
-  const category = Array.isArray(service) ? service[0] : null;
-  const allItems = category?.items ?? [];
-  const featuredAttraction = allItems[0] ?? null;
-  const attractionsData = allItems.slice(1);
+export const NearbyAttractionsDetails = ({ service, category }: { service: any; category: any }) => {
+  const subCategories = Array.isArray(service) ? service : [];
+  const featuredAttraction = subCategories[0] ?? null;
+  const restAttractions = subCategories.slice(1);
 
   return (
     <div className={styles.detailsPage}>
@@ -18,62 +17,63 @@ export const NearbyAttractionsDetails = ({ service }: { service: any }) => {
         )}
         <h1 className={styles.title}>{category?.name}</h1>
       </div>
-
       <div style={{ padding: "2rem", maxWidth: "1400px", margin: "0 auto" }}>
         {/* Featured Card */}
         {featuredAttraction && (
-        <div
-          style={{
-            borderRadius: "16px",
-            overflow: "hidden",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            marginBottom: "2.5rem",
-            background: "white",
-          }}
-        >
-          <img
-            src={featuredAttraction.image}
-            alt={featuredAttraction.name}
+          <div
             style={{
-              width: "100%",
-              height: "550px",
-              objectFit: "cover",
+              borderRadius: "16px",
+              overflow: "hidden",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              marginBottom: "2.5rem",
+              background: "white",
             }}
-          />
-          <div style={{ padding: "2rem" }}>
-            <h2
+          >
+            <img
+              src={featuredAttraction.image}
+              alt={featuredAttraction.name}
               style={{
-                margin: "0 0 1rem 0",
-                fontSize: "1.75rem",
-                fontWeight: "600",
-                color: "#333",
+                width: "100%",
+                height: "550px",
+                objectFit: "cover",
               }}
-            >
-              {featuredAttraction.name}
-            </h2>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "1rem",
-                color: "#666",
-                lineHeight: "1.6",
-              }}
-            >
-              {featuredAttraction.description}
-            </p>
+            />
+            <div style={{ padding: "2rem" }}>
+              <h2
+                style={{
+                  margin: "0 0 1rem 0",
+                  fontSize: "1.75rem",
+                  fontWeight: "600",
+                  color: "#333",
+                }}
+              >
+                {featuredAttraction.name}
+              </h2>
+              {featuredAttraction.description && (
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "1rem",
+                    color: "#666",
+                    lineHeight: "1.6",
+                  }}
+                >
+                  {featuredAttraction.description}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
         )}
 
-        {/* Regular Attractions Grid */}
+        {/* Remaining Attractions Grid */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
             gap: "1.5rem",
           }}
         >
-          {attractionsData.map((attraction:any) => (
+          {restAttractions.map((attraction: any) => (
             <div
               key={attraction.id}
               style={{
@@ -98,7 +98,7 @@ export const NearbyAttractionsDetails = ({ service }: { service: any }) => {
                 alt={attraction.name}
                 style={{
                   width: "100%",
-                  height: "180px",
+                  height: "200px",
                   objectFit: "cover",
                 }}
               />
@@ -113,16 +113,18 @@ export const NearbyAttractionsDetails = ({ service }: { service: any }) => {
                 >
                   {attraction.name}
                 </h3>
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: "0.9rem",
-                    color: "#666",
-                    lineHeight: "1.5",
-                  }}
-                >
-                  {attraction.description}
-                </p>
+                {attraction.description && (
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.9rem",
+                      color: "#666",
+                      lineHeight: "1.5",
+                    }}
+                  >
+                    {attraction.description}
+                  </p>
+                )}
               </div>
             </div>
           ))}
