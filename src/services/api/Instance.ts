@@ -30,7 +30,7 @@ Instance.interceptors.request.use(
 
 Instance.interceptors.response.use(
   (response: any) => {
-    if (response.status === 401 || response.status === 500) {
+    if (response.status === 401) {
       clearLocalStorage();
       window.location.href = "/";
     } else {
@@ -38,7 +38,7 @@ Instance.interceptors.response.use(
     }
   },
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 500) {
+    if (error.response?.status === 401) {
       clearLocalStorage();
       window.location.href = "/";
     }

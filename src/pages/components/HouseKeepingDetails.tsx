@@ -131,7 +131,7 @@ export const HousekeepingDetails = ({
 
     try {
       const formData = {
-        item_ids: selectedOptions.map((opt) => opt.id),
+        items: selectedOptions.map((opt) => ({ ...opt })),
         comments: comments,
         sub_booking_id: JSON.parse(localStorage.getItem("session") || "{}")
           ?.user_details?.sub_booking_id,
