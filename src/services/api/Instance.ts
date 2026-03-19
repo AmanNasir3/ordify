@@ -30,17 +30,17 @@ Instance.interceptors.request.use(
 
 Instance.interceptors.response.use(
   (response: any) => {
-    if (response.status === 401 && response.data.redirect) {
+    if (response.status === 401 || response.status === 500) {
       clearLocalStorage();
-      window.location.reload();
+      window.location.href = "/";
     } else {
       return response;
     }
   },
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 500) {
       clearLocalStorage();
-      window.location.reload();
+      window.location.href = "/";
     }
     return Promise.reject(error);
   },
@@ -77,44 +77,19 @@ export const getSubcategoriesByCategory = (categoryId: string) => {
   });
 };
 
-export const fetchHotelLogoForHeader = async (authToken?: string) => {
-  try {
-    const requestConfig = {
-      method: "get",
-      url: `${config.devlopmentUrlV3}/logo`,
-      responseType: "arraybuffer" as "arraybuffer",
-      headers: {
-        "content-type": "application/json",
-        accept: "application/json",
-      },
-    };
+export const createOrder = (orderData: any) => {
+  return Instance({
+    method: "POST",
+    url: "/ordify/order",
+    data: orderData,
+  });
+};
 
-    // If authToken is provided, add it to the headers
-    if (authToken) {
-      // @ts-ignore
-      requestConfig.headers["Authorization"] = authToken
-        .replace(/, undefined$/, "")
-        .trim();
-    }
-
-    // @ts-ignore
-    const response = await axios(requestConfig);
-
-    if (response.status !== 200) {
-      return null;
-    }
-
-    const base64 = btoa(
-      new Uint8Array(response.data).reduce(
-        (data, byte) => data + String.fromCharCode(byte),
-        "",
-      ),
-    );
-    return `data:${response.headers["content-type"]};base64,${base64}`;
-  } catch (error) {
-    console.error("Error fetching hotel logo:", error);
-    return null;
-  }
+export const fetchHotelLogoForHeader = async () => {
+  return Instance({
+    method: "GET",
+    url: "/ordify/logo",
+  });
 };
 
 export default Instance;
