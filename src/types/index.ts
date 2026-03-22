@@ -6,6 +6,7 @@ export interface Service {
   icon?: string;
   rating: number | null;
   reviewCount: number;
+  banner_image: string;
 }
 
 export interface NavLink {

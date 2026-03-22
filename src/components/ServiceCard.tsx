@@ -1,19 +1,17 @@
-import { IoStarOutline } from 'react-icons/io5';
-import styles from './ServiceCard.module.css';
+import { IoStarOutline } from "react-icons/io5";
+import styles from "./ServiceCard.module.css";
 
-import { useNavigate } from 'react-router';
-import type { Service } from '../types';
+import { useNavigate } from "react-router";
+import type { Service } from "../types";
 
 interface ServiceCardProps {
   service: Service;
   onClick?: (service: Service) => void;
 }
 
-
 const ServiceCard = ({ service, onClick }: ServiceCardProps) => {
   const navigate = useNavigate();
   const handleClick = () => {
-    
     if (onClick) {
       onClick(service);
     } else {
@@ -25,7 +23,7 @@ const ServiceCard = ({ service, onClick }: ServiceCardProps) => {
     <article className={styles.card} onClick={handleClick}>
       <div className={styles.imageWrapper}>
         <img
-          src={service.image}
+          src={service.banner_image}
           alt={service.name}
           className={styles.image}
           loading="lazy"
@@ -41,7 +39,6 @@ const ServiceCard = ({ service, onClick }: ServiceCardProps) => {
       </div>
       <div className={styles.content}>
         <h3 className={styles.title}>{service.name}</h3>
-         
       </div>
     </article>
   );
