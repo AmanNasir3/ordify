@@ -2,15 +2,11 @@ import { useEffect, useState } from "react";
 import styles from "../ServiceDetails.module.css";
 import layoutStyles from "../ServiceDetailsLayout.module.css";
 import formStyles from "../ServiceDetailsForm.module.css";
-import {
-  Box,
-  Text,
-  Flex,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Text, Flex, VStack, Button } from "@chakra-ui/react";
 import { Accordion } from "@chakra-ui/react";
 import DefaultImage from "../../assets/images.png";
-
+import { createOrder } from "../../services/api/Instance";
+import { toaster } from "../../components/ui/toaster";
 
 export const HousekeepingDetails = ({
   subCategory,
@@ -22,6 +18,8 @@ export const HousekeepingDetails = ({
   interface ServiceOption {
     name: string;
     description: string;
+    id: any;
+    is_pos: any;
   }
 
   interface ServiceCategory {
@@ -30,8 +28,10 @@ export const HousekeepingDetails = ({
     options: ServiceOption[];
   }
 
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<ServiceOption[]>([]);
   const [activeSection, setActiveSection] = useState<string>("");
+  const [comments, setComments] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Map API subcategories to departments
   const departments: ServiceCategory[] =
@@ -41,6 +41,8 @@ export const HousekeepingDetails = ({
       options: sub.items.map((item: any) => ({
         name: item.name,
         description: item.description || "",
+        id: item.id.toString(),
+        is_pos: item.is_pos,
       })),
     })) || [];
 
@@ -102,22 +104,72 @@ export const HousekeepingDetails = ({
     }
   };
 
-  const handleOptionToggle = (option: string) => {
+  const handleOptionToggle = (option: ServiceOption) => {
     setSelectedOptions((prev) =>
-      prev.includes(option)
-        ? prev.filter((o) => o !== option)
+      prev.find((o) => o.id === option.id)
+        ? prev.filter((o) => o.id !== option.id)
         : [...prev, option],
     );
   };
 
-  const handleRemoveSelected = (option: string) => {
-    setSelectedOptions((prev) => prev.filter((o) => o !== option));
+  const handleRemoveSelected = (optionId: string | number) => {
+    setSelectedOptions((prev) => prev.filter((o) => o.id !== optionId));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (selectedOptions.length === 0) {
+      toaster.create({
+        description: "Please select at least one service",
+        type: "error",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const formData = {
+        items: selectedOptions.map((opt) => ({ ...opt })),
+        comments: comments,
+        sub_booking_id: JSON.parse(localStorage.getItem("session") || "{}")
+          ?.user_details?.sub_booking_id,
+        is_pos: selectedOptions[0]?.is_pos || false,
+      };
+
+      const response = await createOrder(formData);
+
+      if (response.status === 200 || response.status === 201) {
+        toaster.create({
+          description: "Your request has been submitted successfully!",
+          type: "success",
+        });
+        setSelectedOptions([]);
+        setComments("");
+      } else {
+        toaster.create({
+          description:
+            response.data?.message ||
+            "Failed to submit order. Please try again.",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting order:", error);
+
+      toaster.create({
+        description: "Failed to submit order. Please try again.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!subCategory || departments.length === 0) {
     return <div className={styles.loading}>Loading...</div>;
   }
-  console.log({ category });
 
   return (
     <div className={styles.detailsPage}>
@@ -190,12 +242,12 @@ export const HousekeepingDetails = ({
                     <Accordion.ItemContent>
                       <VStack gap={0} align="stretch">
                         {category.options.map((option, idx) => {
-                          const isSelected = selectedOptions.includes(
-                            option.name,
+                          const isSelected = selectedOptions.some(
+                            (o) => o.id === option.id,
                           );
                           return (
                             <Box
-                              key={option.name}
+                              key={option.id}
                               borderBottom={
                                 idx < category.options.length - 1
                                   ? "1px solid"
@@ -210,16 +262,16 @@ export const HousekeepingDetails = ({
                                   <input
                                     type="checkbox"
                                     className={layoutStyles.checkbox}
-                                    checked={isSelected}
-                                    onChange={() =>
-                                      handleOptionToggle(option.name)
-                                    }
-                                    id={`opt-${option.name}`}
+                                    checked={selectedOptions.some(
+                                      (o) => o.id === option.id,
+                                    )}
+                                    onChange={() => handleOptionToggle(option)}
+                                    id={`opt-${option.id}`}
                                     style={{ marginTop: "4px", flexShrink: 0 }}
                                   />
                                   <Box flex="1">
                                     <label
-                                      htmlFor={`opt-${option.name}`}
+                                      htmlFor={`opt-${option.id}`}
                                       style={{
                                         fontSize: "1rem",
                                         fontWeight: "600",
@@ -261,12 +313,12 @@ export const HousekeepingDetails = ({
           {selectedOptions.length > 0 && (
             <div className={layoutStyles.selectedOptionsBar}>
               {selectedOptions.map((opt) => (
-                <span key={opt} className={layoutStyles.selectedOption}>
-                  {opt}
+                <span key={opt.id} className={layoutStyles.selectedOption}>
+                  {opt.name}
                   <button
                     className={layoutStyles.removeBtn}
-                    onClick={() => handleRemoveSelected(opt)}
-                    aria-label={`Remove ${opt}`}
+                    onClick={() => handleRemoveSelected(opt.id)}
+                    aria-label={`Remove ${opt.name}`}
                   >
                     ×
                   </button>
@@ -274,32 +326,8 @@ export const HousekeepingDetails = ({
               ))}
             </div>
           )}
-          <form className={formStyles.formCard}>
+          <form className={formStyles.formCard} onSubmit={handleSubmit}>
             <div className={formStyles.formTitle}>Your Request</div>
-            <div className={formStyles.formGroup}>
-              <label htmlFor="reservationName" className={formStyles.label}>
-                Your Reservation Name
-              </label>
-              <input
-                type="text"
-                id="reservationName"
-                name="reservationName"
-                className={formStyles.input}
-                required
-              />
-            </div>
-            <div className={formStyles.formGroup}>
-              <label htmlFor="email" className={formStyles.label}>
-                Your Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className={formStyles.input}
-                required
-              />
-            </div>
             <div className={formStyles.formGroup}>
               <label htmlFor="comments" className={formStyles.label}>
                 Comments
@@ -307,12 +335,23 @@ export const HousekeepingDetails = ({
               <textarea
                 id="comments"
                 name="comments"
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
                 className={formStyles.input + " " + formStyles.textarea}
+                placeholder="Add any additional comments or special requests..."
               />
             </div>
-            <button type="submit" className={formStyles.submitBtn}>
-              Submit Request
-            </button>
+            <Button
+              disabled={selectedOptions.length === 0 || loading}
+              w="100%"
+              colorScheme="blue"
+              size="lg"
+              type="submit"
+              className={formStyles.submitBtn}
+              loading={loading}
+            >
+              {loading ? "Submitting..." : "Submit Request"}
+            </Button>
           </form>
         </aside>
       </div>
