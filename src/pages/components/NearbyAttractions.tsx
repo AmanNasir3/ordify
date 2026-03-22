@@ -1,9 +1,12 @@
+import { useState } from "react";
+import { Dialog, Image, Text } from "@chakra-ui/react";
 import styles from "../ServiceDetails.module.css";
 
 export const NearbyAttractionsDetails = ({ service, category }: { service: any; category: any }) => {
   const subCategories = Array.isArray(service) ? service : [];
   const featuredAttraction = subCategories[0] ?? null;
   const restAttractions = subCategories.slice(1);
+  const [selectedAttraction, setSelectedAttraction] = useState<any>(null);
 
   return (
     <div className={styles.detailsPage}>
@@ -76,6 +79,7 @@ export const NearbyAttractionsDetails = ({ service, category }: { service: any; 
           {restAttractions.map((attraction: any) => (
             <div
               key={attraction.id}
+              onClick={() => setSelectedAttraction(attraction)}
               style={{
                 borderRadius: "12px",
                 overflow: "hidden",
@@ -120,6 +124,10 @@ export const NearbyAttractionsDetails = ({ service, category }: { service: any; 
                       fontSize: "0.9rem",
                       color: "#666",
                       lineHeight: "1.5",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
                     }}
                   >
                     {attraction.description}
@@ -130,6 +138,43 @@ export const NearbyAttractionsDetails = ({ service, category }: { service: any; 
           ))}
         </div>
       </div>
+
+      {/* Modal */}
+      <Dialog.Root
+        open={!!selectedAttraction}
+        onOpenChange={(e) => { if (!e.open) setSelectedAttraction(null); }}
+        size="lg"
+        placement="center"
+      >
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content p={5}>
+            {selectedAttraction && (
+              <>
+                <Image
+                  src={selectedAttraction.image}
+                  alt={selectedAttraction.name}
+                  width="100%"
+                  height="320px"
+                  objectFit="cover"
+                  borderRadius={7}
+                />
+                <Dialog.Header>
+                  <Dialog.Title>{selectedAttraction.name}</Dialog.Title>
+                  <Dialog.CloseTrigger />
+                </Dialog.Header>
+                <Dialog.Body pb={6}>
+                  {selectedAttraction.description && (
+                    <Text fontSize="md" color="gray.600" lineHeight="1.7">
+                      {selectedAttraction.description}
+                    </Text>
+                  )}
+                </Dialog.Body>
+              </>
+            )}
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
     </div>
   );
 };
