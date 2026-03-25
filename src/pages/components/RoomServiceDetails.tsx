@@ -1,5 +1,7 @@
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../ServiceDetails.module.css";
+import layoutStyles from "../ServiceDetailsLayout.module.css";
+import formStyles from "../ServiceDetailsForm.module.css";
 import {
   Box,
   Button,
@@ -7,284 +9,152 @@ import {
   Image,
   Flex,
   IconButton,
-  HStack,
   VStack,
   Separator,
 } from "@chakra-ui/react";
-import { Tabs } from "@chakra-ui/react";
-import { Dialog } from "@chakra-ui/react";
-import { RadioGroup } from "@chakra-ui/react";
-import { IoClose } from "react-icons/io5";
-import type { Service } from "../../types";
+import { IoClose, IoAdd, IoRemove } from "react-icons/io5";
+import { createOrder } from "../../services/api/Instance";
+import { toaster } from "../../components/ui/toaster";
 
- 
+interface ApiItem {
+  id: number;
+  name: string;
+  description: string | null;
+  image: string;
+  item_id: number;
+  price: string;
+  is_custom_amount: boolean;
+  custom_amount: string;
+  charge_tax: boolean;
+  is_pos: boolean;
+}
 
+interface ApiSubCategory {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  items: ApiItem[];
+}
 
-// RoomServiceDetails component
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  is_pos: boolean;
+}
 
+const VISIBLE_PILLS = 4;
 
-export const RoomServiceDetails = ({ service }: { service: Service }) => {
-  interface MenuItem {
-    id: string;
-    name: string;
-    regularPrice: number;
-    largePrice: number;
-    image?: string;
-  }
+export const RoomServiceDetails = ({
+  service,
+  category,
+}: {
+  service: ApiSubCategory[] | null;
+  category: any;
+}) => {
+  const menuData: ApiSubCategory[] = service || [];
 
-  interface MenuCategory {
-    id: string;
-    name: string;
-    items: MenuItem[];
-  }
-
-  interface CartItem {
-    id: string;
-    name: string;
-    size: "Regular" | "Large";
-    price: number;
-    quantity: number;
-  }
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [selectedSize, setSelectedSize] = useState<"Regular" | "Large">(
-    "Regular",
-  );
+  const [activeCategory, setActiveCategory] = useState<string>("");
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [showMorePills, setShowMorePills] = useState(false);
+  const [comments, setComments] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const menuData: MenuCategory[] = [
-    {
-      id: "soups",
-      name: "THE SOUP OPERA",
-      items: [
-        {
-          id: "s1",
-          name: "Chicken Corn Soup",
-          regularPrice: 385,
-          largePrice: 570,
-          image:
-            "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop",
-        },
-        {
-          id: "s2",
-          name: "Cream of Mushroom Soup",
-          regularPrice: 570,
-          largePrice: 740,
-          image:
-            "https://images.unsplash.com/photo-1547592180-85f173990554?w=600&h=400&fit=crop",
-        },
-        {
-          id: "s3",
-          name: "Cream of Chicken Soup",
-          regularPrice: 640,
-          largePrice: 820,
-          image:
-            "https://images.unsplash.com/photo-1588566565463-180a5b2090d2?w=600&h=400&fit=crop",
-        },
-      ],
-    },
-    {
-      id: "salads",
-      name: "THE GREEN BAR",
-      items: [
-        {
-          id: "sl1",
-          name: "Russian Salad",
-          regularPrice: 605,
-          largePrice: 805,
-          image:
-            "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop",
-        },
-        {
-          id: "sl2",
-          name: "Fresh Green Salad",
-          regularPrice: 280,
-          largePrice: 450,
-          image:
-            "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop",
-        },
-      ],
-    },
-    {
-      id: "fastfood",
-      name: "VERY FAST FOOD",
-      items: [
-        {
-          id: "ff1",
-          name: "Chicken Nuggets with Fries",
-          regularPrice: 1020,
-          largePrice: 1320,
-          image:
-            "https://images.unsplash.com/photo-1562967914-608f82629710?w=600&h=400&fit=crop",
-        },
-        {
-          id: "ff2",
-          name: "Chicken Burger",
-          regularPrice: 770,
-          largePrice: 970,
-          image:
-            "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop",
-        },
-        {
-          id: "ff3",
-          name: "Beef Burger",
-          regularPrice: 785,
-          largePrice: 985,
-          image:
-            "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&h=400&fit=crop",
-        },
-        {
-          id: "ff4",
-          name: "Club Sandwich",
-          regularPrice: 690,
-          largePrice: 890,
-          image:
-            "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&h=400&fit=crop",
-        },
-      ],
-    },
-    {
-      id: "chinese",
-      name: "FROM CHINA WITH LOVE",
-      items: [
-        {
-          id: "ch1",
-          name: "Chicken Manchurian",
-          regularPrice: 1090,
-          largePrice: 1390,
-          image:
-            "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&h=400&fit=crop",
-        },
-        {
-          id: "ch2",
-          name: "Chicken Chow Mein",
-          regularPrice: 1040,
-          largePrice: 1340,
-          image:
-            "https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&h=400&fit=crop",
-        },
-        {
-          id: "ch3",
-          name: "Chicken Fried Rice",
-          regularPrice: 910,
-          largePrice: 1210,
-          image:
-            "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&h=400&fit=crop",
-        },
-      ],
-    },
-    {
-      id: "desserts",
-      name: "DESSERT LOUNGE",
-      items: [
-        {
-          id: "d1",
-          name: "Cream Caramel",
-          regularPrice: 280,
-          largePrice: 380,
-          image:
-            "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&h=400&fit=crop",
-        },
-        {
-          id: "d2",
-          name: "Choice of Ice Cream",
-          regularPrice: 175,
-          largePrice: 275,
-          image:
-            "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=600&h=400&fit=crop",
-        },
-        {
-          id: "d3",
-          name: "Chocolate Mousse",
-          regularPrice: 305,
-          largePrice: 405,
-          image:
-            "https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?w=600&h=400&fit=crop",
-        },
-      ],
-    },
-    {
-      id: "beverages",
-      name: "HOT & COLD BEVERAGES",
-      items: [
-        {
-          id: "b1",
-          name: "Cold Coffee",
-          regularPrice: 370,
-          largePrice: 520,
-          image:
-            "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=600&h=400&fit=crop",
-        },
-        {
-          id: "b2",
-          name: "Fresh Juices",
-          regularPrice: 400,
-          largePrice: 550,
-          image:
-            "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600&h=400&fit=crop",
-        },
-        {
-          id: "b3",
-          name: "Milkshake",
-          regularPrice: 450,
-          largePrice: 600,
-          image:
-            "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&h=400&fit=crop",
-        },
-        {
-          id: "b4",
-          name: "Green Tea",
-          regularPrice: 195,
-          largePrice: 295,
-          image:
-            "https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=600&h=400&fit=crop",
-        },
-      ],
-    },
-  ];
+  useEffect(() => {
+    if (menuData.length > 0 && !activeCategory) {
+      setActiveCategory(menuData[0].id.toString());
+    }
+  }, [menuData]);
 
-  const handleChooseOptions = (item: MenuItem) => {
-    setSelectedItem(item);
-    setSelectedSize("Regular");
-    setIsModalOpen(true);
+  const visibleCategories = menuData.slice(0, VISIBLE_PILLS);
+  const hiddenCategories = menuData.slice(VISIBLE_PILLS);
+
+  const handleScrollToSection = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    const element = document.getElementById(`section-${categoryId}`);
+    if (element) {
+      const headerOffset = 120;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    }
   };
 
-  const handleAddToCart = () => {
-    if (!selectedItem) return;
-
-    const price =
-      selectedSize === "Regular"
-        ? selectedItem.regularPrice
-        : selectedItem.largePrice;
-    const cartItemId = `${selectedItem.id}-${selectedSize}`;
-
+  const handleAddToCart = (item: ApiItem) => {
+    const itemId = item.id.toString();
+    const price = parseFloat(item.price);
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === cartItemId);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.id === cartItemId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
+      const existing = prevCart.find((i) => i.id === itemId);
+      if (existing) {
+        return prevCart.map((i) =>
+          i.id === itemId ? { ...i, quantity: i.quantity + 1 } : i,
         );
       }
       return [
         ...prevCart,
-        {
-          id: cartItemId,
-          name: selectedItem.name,
-          size: selectedSize,
-          price,
-          quantity: 1,
-        },
+        { id: itemId, name: item.name, price, quantity: 1, is_pos: item.is_pos },
       ];
     });
-
-    setIsModalOpen(false);
   };
 
-  const handleRemoveFromCart = (cartItemId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== cartItemId));
+  const handleSubmit = async () => {
+    if (cart.length === 0) return;
+    setLoading(true);
+    try {
+      const formData = {
+        items: cart.map((item) => ({
+          id: item.id,
+          name: item.name,
+          amount: item.price,
+          quantity: item.quantity,
+          is_pos: item.is_pos,
+        })),
+        comments,
+        sub_booking_id: JSON.parse(localStorage.getItem("session") || "{}")
+          ?.user_details?.sub_booking_id,
+        is_pos: cart[0]?.is_pos || false,
+      };
+      const response = await createOrder(formData);
+      if (response.status === 200 || response.status === 201) {
+        toaster.create({
+          description: "Your order has been submitted successfully!",
+          type: "success",
+        });
+        setCart([]);
+        setComments("");
+      } else {
+        toaster.create({
+          description: response.data?.message || "Failed to submit order. Please try again.",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      toaster.create({
+        description: "Failed to submit order. Please try again.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDecreaseQuantity = (itemId: string) => {
+    setCart((prevCart) => {
+      const existing = prevCart.find((i) => i.id === itemId);
+      if (existing && existing.quantity === 1) {
+        return prevCart.filter((i) => i.id !== itemId);
+      }
+      return prevCart.map((i) =>
+        i.id === itemId ? { ...i, quantity: i.quantity - 1 } : i,
+      );
+    });
+  };
+
+  const handleRemoveFromCart = (itemId: string) => {
+    setCart((prevCart) => prevCart.filter((i) => i.id !== itemId));
   };
 
   const calculateTotal = () => {
@@ -292,266 +162,361 @@ export const RoomServiceDetails = ({ service }: { service: Service }) => {
   };
 
   return (
-    <Box>
+    <div className={styles.detailsPage}>
       <div className={styles.headerSection}>
         <img
-          src={service.image}
-          alt={service.name}
+          src={category?.image}
+          alt={category?.name}
           className={styles.headerImg}
         />
-        <h1 className={styles.title}>{service.name}</h1>
+        <h1 className={styles.title}>{category?.name}</h1>
       </div>
 
-      <Flex
-        gap={6}
-        p={6}
-        maxW="1400px"
-        mx="auto"
-        flexDirection={{ base: "column", lg: "row" }}
+      {/* Pills Navigation */}
+      <Box
+        bg="white"
+        px={{ base: 4, md: 8 }}
+        py={4}
+        boxShadow="sm"
+        position="sticky"
+        top={0}
+        zIndex={10}
       >
-        {/* Left Side - Menu */}
-        <Box flex="1" minW="0">
-          <Tabs.Root variant="plain" defaultValue={menuData[0].id}>
-            <Tabs.List flexWrap="wrap" gap={2} mb={6}>
-              {menuData.map((category) => (
-                <Tabs.Trigger
-                  key={category.id}
-                  value={category.id}
-                  fontSize="sm"
-                  fontWeight="600"
-                  px={4}
-                  py={2}
-                  borderRadius="full"
-                  _selected={{ bg: "blue.500", color: "white" }}
-                >
-                  {category.name}
-                </Tabs.Trigger>
-              ))}
-            </Tabs.List>
-
-            <Tabs.ContentGroup>
-              {menuData.map((category) => (
-                <Tabs.Content key={category.id} value={category.id} p={0}>
-                  <Box
-                    display="grid"
-                    gridTemplateColumns="repeat(auto-fill, minmax(280px, 1fr))"
-                    gap={4}
-                  >
-                    {category.items.map((item) => (
-                      <Box
-                        key={item.id}
-                        borderRadius="12px"
-                        overflow="hidden"
-                        boxShadow="md"
-                        bg="white"
-                        transition="all 0.3s"
-                        cursor="pointer"
-                        _hover={{
-                          transform: "translateY(-4px)",
-                          boxShadow: "lg",
-                        }}
-                      >
-                        {item.image && (
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            w="100%"
-                            h="180px"
-                            objectFit="cover"
-                          />
-                        )}
-                        <Box p={4}>
-                          <Text fontSize="lg" fontWeight="600" mb={3}>
-                            {item.name}
-                          </Text>
-                          <Flex justify="space-between" align="center">
-                            <Text fontSize="sm" color="gray.600">
-                              Starting from{" "}
-                              <Text as="span" fontWeight="700" color="gray.800">
-                                PKR {item.regularPrice}
-                              </Text>
-                            </Text>
-                            <Button
-                              size="sm"
-                              color={"black"}
-                              onClick={() => handleChooseOptions(item)}
-                            >
-                              Choose options →
-                            </Button>
-                          </Flex>
-                        </Box>
-                      </Box>
-                    ))}
-                  </Box>
-                </Tabs.Content>
-              ))}
-            </Tabs.ContentGroup>
-          </Tabs.Root>
-        </Box>
-
-        {/* Right Side - Your Order */}
-        <Box
-          w={{ base: "100%", lg: "350px" }}
-          bg="white"
-          borderRadius="12px"
-          boxShadow="md"
-          p={6}
-          position={{ base: "relative", lg: "sticky" }}
-          top={{ lg: "20px" }}
-          h="fit-content"
-        >
-          <Text fontSize="xl" fontWeight="700" mb={4}>
-            Your Order
-          </Text>
-          <Separator mb={4} />
-
-          {cart.length === 0 ? (
-            <Text fontSize="sm" color="gray.500" textAlign="center" py={8}>
-              You haven't added anything to your order yet.
-            </Text>
-          ) : (
-            <VStack gap={3} align="stretch" mb={4}>
-              {cart.map((item) => (
-                <Box
-                  key={item.id}
-                  p={3}
-                  bg="gray.50"
-                  borderRadius="8px"
-                  position="relative"
-                >
-                  <IconButton
-                    aria-label="Remove item"
-                    size="xs"
-                    position="absolute"
-                    top={2}
-                    right={2}
-                    colorScheme="red"
-                    variant="ghost"
-                    onClick={() => handleRemoveFromCart(item.id)}
-                  >
-                    <IoClose />
-                  </IconButton>
-                  <Text fontSize="sm" fontWeight="600" mb={1}>
-                    {item.name}
-                  </Text>
-                  <Text fontSize="xs" color="gray.600" mb={2}>
-                    Size: {item.size} | Qty: {item.quantity}
-                  </Text>
-                  <Text fontSize="sm" fontWeight="700">
-                    PKR {item.price * item.quantity}
-                  </Text>
-                </Box>
-              ))}
-            </VStack>
-          )}
-
-          <Separator mb={4} />
-
-          <Flex justify="space-between" mb={4}>
-            <Text fontSize="lg" fontWeight="700">
-              TOTAL
-            </Text>
-            <Text fontSize="lg" fontWeight="700" color="blue.600">
-              PKR {calculateTotal().toLocaleString()}
-            </Text>
-          </Flex>
-
-          <Button
-            w="100%"
-            colorScheme="blue"
-            size="lg"
-            disabled={cart.length === 0}
-          >
-            Continue
-          </Button>
-        </Box>
-      </Flex>
-
-      {/* Size Selection Modal */}
-      <Dialog.Root
-        open={isModalOpen}
-        onOpenChange={(e) => setIsModalOpen(e.open)}
-      >
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>{selectedItem?.name}</Dialog.Title>
-              <Dialog.CloseTrigger />
-            </Dialog.Header>
-            <Dialog.Body>
-              <Text fontSize="sm" fontWeight="600" mb={3}>
-                Select size:
-              </Text>
-              <RadioGroup.Root
-                value={selectedSize}
-                onValueChange={(e) =>
-                  setSelectedSize(e.value as "Regular" | "Large")
-                }
-              >
-                <VStack gap={3} align="stretch">
-                  <Box
-                    p={4}
-                    border="2px"
-                    borderColor={
-                      selectedSize === "Regular" ? "blue.500" : "gray.200"
+        <Flex align="center" gap={2} overflow="hidden">
+          {visibleCategories.map((subCat) => (
+            <Button
+              key={subCat.id}
+              size="sm"
+              borderRadius="full"
+              px={4}
+              flexShrink={0}
+              fontWeight="600"
+              fontSize="xs"
+              style={
+                activeCategory === subCat.id.toString()
+                  ? {
+                      background:
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      color: "white",
                     }
-                    borderRadius="8px"
-                    cursor="pointer"
-                    onClick={() => setSelectedSize("Regular")}
-                    transition="all 0.2s"
-                  >
-                    <HStack justify="space-between">
-                      <HStack>
-                        <RadioGroup.Item value="Regular" colorPalette="blue" />
-                        <Text fontWeight="600">Regular</Text>
-                      </HStack>
-                      <Text fontWeight="700">
-                        PKR {selectedItem?.regularPrice}
-                      </Text>
-                    </HStack>
-                  </Box>
+                  : {}
+              }
+              bg={activeCategory === subCat.id.toString() ? undefined : "gray.100"}
+              color={activeCategory === subCat.id.toString() ? undefined : "gray.700"}
+              onClick={() => handleScrollToSection(subCat.id.toString())}
+              _hover={{ opacity: 0.85 }}
+            >
+              {subCat.name}
+            </Button>
+          ))}
 
-                  <Box
-                    p={4}
-                    border="2px"
-                    borderColor={
-                      selectedSize === "Large" ? "blue.500" : "gray.200"
+          {hiddenCategories.length > 0 && (
+            <>
+              {showMorePills &&
+                hiddenCategories.map((subCat) => (
+                  <Button
+                    key={subCat.id}
+                    size="sm"
+                    borderRadius="full"
+                    px={4}
+                    flexShrink={0}
+                    fontWeight="600"
+                    fontSize="xs"
+                    style={
+                      activeCategory === subCat.id.toString()
+                        ? {
+                            background:
+                              "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            color: "white",
+                          }
+                        : {}
                     }
-                    borderRadius="8px"
-                    cursor="pointer"
-                    onClick={() => setSelectedSize("Large")}
-                    transition="all 0.2s"
+                    bg={
+                      activeCategory === subCat.id.toString() ? undefined : "gray.100"
+                    }
+                    color={
+                      activeCategory === subCat.id.toString() ? undefined : "gray.700"
+                    }
+                    onClick={() => handleScrollToSection(subCat.id.toString())}
+                    _hover={{ opacity: 0.85 }}
                   >
-                    <HStack justify="space-between">
-                      <HStack>
-                        <RadioGroup.Item value="Large" colorPalette="blue" />
-                        <Text fontWeight="600">Large</Text>
-                      </HStack>
-                      <Text fontWeight="700">
-                        PKR {selectedItem?.largePrice}
-                      </Text>
-                    </HStack>
-                  </Box>
-                </VStack>
-              </RadioGroup.Root>
-            </Dialog.Body>
-
-            <Dialog.Footer>
+                    {subCat.name}
+                  </Button>
+                ))}
               <Button
-                variant="ghost"
-                mr={3}
-                onClick={() => setIsModalOpen(false)}
+                size="sm"
+                borderRadius="full"
+                px={4}
+                flexShrink={0}
+                fontWeight="600"
+                fontSize="xs"
+                variant="outline"
+                style={{ borderColor: "#667eea", color: "#667eea" }}
+                onClick={() => setShowMorePills(!showMorePills)}
               >
-                Cancel
+                {showMorePills
+                  ? "Show Less"
+                  : `+${hiddenCategories.length} More`}
               </Button>
-              <Button colorScheme="blue" onClick={handleAddToCart}>
-                Add to Order
-              </Button>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
-    </Box>
+            </>
+          )}
+        </Flex>
+      </Box>
+
+      {/* Main Content */}
+      <div className={layoutStyles.detailsLayout}>
+        {/* All subcategories with items */}
+        <Box flex="1" minW="0">
+          {menuData.map((subCat) => (
+            <Box
+              key={subCat.id}
+              id={`section-${subCat.id}`}
+              mb={10}
+              style={{ scrollMarginTop: "120px" }}
+            >
+              <Box
+                mb={5}
+                pb={3}
+                borderBottom="2px solid"
+                borderColor="gray.100"
+                display="flex"
+                alignItems="center"
+                gap={3}
+              >
+                <Box
+                  w="4px"
+                  h="24px"
+                  borderRadius="full"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  }}
+                />
+                <Text fontSize="lg" fontWeight="700" color="gray.800">
+                  {subCat.name}
+                </Text>
+              </Box>
+
+              <Box
+                display="grid"
+                gridTemplateColumns="repeat(auto-fill, minmax(240px, 1fr))"
+                gap={4}
+              >
+                {subCat.items.map((item) => {
+                  const itemId = item.id.toString();
+                  const cartItem = cart.find((i) => i.id === itemId);
+                  return (
+                    <Box
+                      key={item.id}
+                      borderRadius="12px"
+                      overflow="hidden"
+                      boxShadow="sm"
+                      bg="white"
+                      transition="all 0.3s"
+                      _hover={{ transform: "translateY(-4px)", boxShadow: "md" }}
+                      border="1px solid"
+                      borderColor="gray.100"
+                    >
+                      {item.image && (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          w="100%"
+                          h="160px"
+                          objectFit="cover"
+                        />
+                      )}
+                      <Box p={4}>
+                        <Text fontSize="sm" fontWeight="700" mb={1} color="gray.800">
+                          {item.name}
+                        </Text>
+                        {item.description && (
+                          <Text fontSize="xs" color="gray.500" mb={1}>
+                            {item.description}
+                          </Text>
+                        )}
+                        <Text fontSize="xs" color="gray.500" mb={3}>
+                          <Text as="span" fontWeight="700" color="gray.700">
+                            PKR {parseFloat(item.price).toLocaleString()}
+                          </Text>
+                        </Text>
+
+                        {cartItem ? (
+                          <Flex
+                            align="center"
+                            justify="space-between"
+                            bg="purple.50"
+                            borderRadius="8px"
+                            p={1}
+                          >
+                            <IconButton
+                              aria-label="Decrease"
+                              size="xs"
+                              variant="ghost"
+                              colorPalette="purple"
+                              onClick={() => handleDecreaseQuantity(itemId)}
+                            >
+                              <IoRemove />
+                            </IconButton>
+                            <Text fontWeight="700" fontSize="sm" color="purple.700">
+                              {cartItem.quantity}
+                            </Text>
+                            <IconButton
+                              aria-label="Increase"
+                              size="xs"
+                              variant="ghost"
+                              colorPalette="purple"
+                              onClick={() => handleAddToCart(item)}
+                            >
+                              <IoAdd />
+                            </IconButton>
+                          </Flex>
+                        ) : (
+                          <Button
+                            w="100%"
+                            size="sm"
+                            borderRadius="8px"
+                            fontWeight="600"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                              color: "white",
+                            }}
+                            onClick={() => handleAddToCart(item)}
+                            _hover={{ opacity: 0.9 }}
+                          >
+                            Add to Cart
+                          </Button>
+                        )}
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Right Panel - Order Summary */}
+        <aside className={layoutStyles.rightPanel}>
+          <Box
+            bg="white"
+            borderRadius="16px"
+            boxShadow="0 4px 16px rgba(30,30,47,0.08)"
+            p={6}
+            border="1px solid rgba(102, 126, 234, 0.1)"
+            position="sticky"
+            top="80px"
+          >
+            <Text fontSize="xl" fontWeight="700" mb={4} color="gray.800">
+              Your Order
+            </Text>
+            <Separator mb={4} />
+
+            {cart.length === 0 ? (
+              <Text
+                fontSize="sm"
+                color="gray.400"
+                textAlign="center"
+                py={10}
+                lineHeight="1.6"
+              >
+                You haven't added anything to your order yet.
+              </Text>
+            ) : (
+              <VStack gap={3} align="stretch" mb={4}>
+                {cart.map((item) => (
+                  <Box
+                    key={item.id}
+                    p={3}
+                    bg="gray.50"
+                    borderRadius="10px"
+                    position="relative"
+                    border="1px solid"
+                    borderColor="#764ba2"
+                  >
+                    <IconButton
+                      aria-label="Remove item"
+                      size="xs"
+                      position="absolute"
+                      top={2}
+                      right={2}
+                      variant="ghost"
+                      colorPalette="red"
+                      onClick={() => handleRemoveFromCart(item.id)}
+                    >
+                      <IoClose />
+                    </IconButton>
+                    <Text fontSize="sm" fontWeight="600" mb={1} color="gray.800" pr={6}>
+                      {item.name}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500" mb={2}>
+                      Qty: {item.quantity}
+                    </Text>
+                    <Text fontSize="sm" fontWeight="700" color="purple.600">
+                      PKR {(item.price * item.quantity).toLocaleString()}
+                    </Text>
+                  </Box>
+                ))}
+              </VStack>
+            )}
+
+            <Separator mb={4} />
+
+            <Flex justify="space-between" mb={4}>
+              <Text fontSize="md" fontWeight="700" color="gray.800">
+                TOTAL
+              </Text>
+              <Text
+                fontSize="md"
+                fontWeight="700"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                PKR {calculateTotal().toLocaleString()}
+              </Text>
+            </Flex>
+
+            <div className={formStyles.formGroup}>
+              <label htmlFor="rs-comments" className={formStyles.label}>
+                Comments
+              </label>
+              <textarea
+                id="rs-comments"
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
+                className={formStyles.input + " " + formStyles.textarea}
+                placeholder="Add any special requests..."
+              />
+            </div>
+
+            <Button
+              w="100%"
+              size="lg"
+              borderRadius="10px"
+              fontWeight="700"
+              disabled={cart.length === 0 || loading}
+              loading={loading}
+              onClick={handleSubmit}
+              style={
+                cart.length > 0
+                  ? {
+                      background:
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      color: "white",
+                    }
+                  : {}
+              }
+            >
+              {loading ? "Submitting..." : "Continue"}
+            </Button>
+          </Box>
+        </aside>
+      </div>
+    </div>
   );
 };

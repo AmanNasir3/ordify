@@ -34,7 +34,7 @@ const ServiceDetails = () => {
   }
 
   if (slug === "room-service") {
-    return <RoomServiceDetails service={subCategory} />;
+    return <RoomServiceDetails service={subCategory} category={category} />;
   }
 
   if (slug === "nearby-attractions") {
