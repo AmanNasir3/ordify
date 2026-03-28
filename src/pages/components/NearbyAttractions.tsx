@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, Image, Text } from "@chakra-ui/react";
+import { Dialog, Image, Text, Skeleton, SkeletonText, VStack, Box } from "@chakra-ui/react";
 import styles from "../ServiceDetails.module.css";
 
 export const NearbyAttractionsDetails = ({ service, category }: { service: any; category: any }) => {
@@ -7,6 +7,33 @@ export const NearbyAttractionsDetails = ({ service, category }: { service: any; 
   const featuredAttraction = subCategories[0] ?? null;
   const restAttractions = subCategories.slice(1);
   const [selectedAttraction, setSelectedAttraction] = useState<any>(null);
+
+  if (!subCategories || subCategories.length === 0) {
+    return (
+      <div className={styles.detailsPage}>
+        <div className={styles.headerSection}>
+          <Skeleton height="300px" mb={6} />
+          <SkeletonText noOfLines={2} mb={8} />
+        </div>
+        <div style={{ padding: "2rem", maxWidth: "1400px", margin: "0 auto" }}>
+          {/* Featured Skeleton */}
+          <div style={{ marginBottom: "2.5rem" }}>
+            <Skeleton height="550px" borderRadius="16px" mb={4} />
+            <SkeletonText noOfLines={5} mb={6} />
+          </div>
+          {/* Grid Skeleton */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.5rem" }}>
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i}>
+                <Skeleton height="200px" borderRadius="12px" mb={3} />
+                <SkeletonText noOfLines={3} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.detailsPage}>
@@ -163,7 +190,7 @@ export const NearbyAttractionsDetails = ({ service, category }: { service: any; 
                   <Dialog.Title>{selectedAttraction.name}</Dialog.Title>
                   <Dialog.CloseTrigger />
                 </Dialog.Header>
-                <Dialog.Body pb={6}>
+                <Dialog.Body pb={6} maxHeight="400px" overflowY="auto">
                   {selectedAttraction.description && (
                     <Text fontSize="md" color="gray.600" lineHeight="1.7">
                       {selectedAttraction.description}

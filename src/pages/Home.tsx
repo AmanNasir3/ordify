@@ -11,7 +11,9 @@ const Home = () => {
     reopenVerification: () => void;
   }>();
   const [categories, setCategories] = useState<any[]>([]);
-  const [carouselImages, setCarouselImages] = useState<{ id:number; image: string }[]>([]);
+  const [carouselImages, setCarouselImages] = useState<
+    { id: number; image: string }[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,11 +47,10 @@ const Home = () => {
         if (response.status === 200 && response.data.categories) {
           setCategories(response.data.categories);
         }
-        
+
         if (carouselResponse.status === 200 && carouselResponse.data.data) {
           setCarouselImages(carouselResponse.data.data);
         }
-
       } catch (error) {
         console.error("Error fetching categories:", error);
       } finally {
@@ -102,14 +103,14 @@ const Home = () => {
                   service={{
                     id: category.id,
                     name: category.name,
-                    slug: category.name.toLowerCase().replace(/\s+/g, "-"),
+                    slug: category.type_id,
                     image: category.image,
                   }}
                   onClick={() =>
                     handleServiceClick({
                       id: category.id,
                       name: category.name,
-                      slug: category.name.toLowerCase().replace(/\s+/g, "-"),
+                      slug: category.type_id,
                       image: category.image,
                       rating: null,
                       reviewCount: 0,
@@ -139,7 +140,7 @@ const Home = () => {
                       handleServiceClick({
                         id: category.id,
                         name: category.name,
-                        slug: category.name.toLowerCase().replace(/\s+/g, "-"),
+                        slug: category.type_id,
                         image: category.image,
                         rating: null,
                         reviewCount: 0,

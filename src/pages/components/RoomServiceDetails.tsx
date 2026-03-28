@@ -11,6 +11,8 @@ import {
   IconButton,
   VStack,
   Separator,
+  Skeleton,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { IoClose, IoAdd, IoRemove } from "react-icons/io5";
 import { createOrder } from "../../services/api/Instance";
@@ -26,7 +28,6 @@ interface ApiItem {
   is_custom_amount: boolean;
   custom_amount: string;
   charge_tax: boolean;
-  is_pos: boolean;
 }
 
 interface ApiSubCategory {
@@ -42,7 +43,6 @@ interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  is_pos: boolean;
 }
 
 const VISIBLE_PILLS = 4;
@@ -77,7 +77,8 @@ export const RoomServiceDetails = ({
     if (element) {
       const headerOffset = 120;
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
@@ -94,7 +95,12 @@ export const RoomServiceDetails = ({
       }
       return [
         ...prevCart,
-        { id: itemId, name: item.name, price, quantity: 1, is_pos: item.is_pos },
+        {
+          id: itemId,
+          name: item.name,
+          price,
+          quantity: 1,
+        },
       ];
     });
   };
@@ -109,12 +115,10 @@ export const RoomServiceDetails = ({
           name: item.name,
           amount: item.price,
           quantity: item.quantity,
-          is_pos: item.is_pos,
         })),
         comments,
         sub_booking_id: JSON.parse(localStorage.getItem("session") || "{}")
           ?.user_details?.sub_booking_id,
-        is_pos: cart[0]?.is_pos || false,
       };
       const response = await createOrder(formData);
       if (response.status === 200 || response.status === 201) {
@@ -126,7 +130,9 @@ export const RoomServiceDetails = ({
         setComments("");
       } else {
         toaster.create({
-          description: response.data?.message || "Failed to submit order. Please try again.",
+          description:
+            response.data?.message ||
+            "Failed to submit order. Please try again.",
           type: "error",
         });
       }
@@ -160,6 +166,46 @@ export const RoomServiceDetails = ({
   const calculateTotal = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
+
+  if (!menuData || menuData.length === 0) {
+    return (
+      <div className={styles.detailsPage}>
+        <div className={styles.headerSection}>
+          <Skeleton height="300px" mb={6} />
+          <SkeletonText noOfLines={2} mb={8} />
+        </div>
+        <Box bg="white" px={{ base: 4, md: 8 }} py={4} boxShadow="sm">
+          <Flex gap={2} overflow="hidden">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton
+                key={i}
+                height="40px"
+                width="100px"
+                borderRadius="full"
+              />
+            ))}
+          </Flex>
+        </Box>
+        <Box px={{ base: 4, md: 8 }} py={8}>
+          {[1, 2, 3].map((i) => (
+            <Box key={i} mb={8}>
+              <Skeleton height="40px" mb={4} borderRadius="8px" />
+              <VStack gap={4}>
+                {[1, 2].map((j) => (
+                  <Skeleton
+                    key={j}
+                    height="120px"
+                    borderRadius="8px"
+                    width="100%"
+                  />
+                ))}
+              </VStack>
+            </Box>
+          ))}
+        </Box>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.detailsPage}>
@@ -201,8 +247,12 @@ export const RoomServiceDetails = ({
                     }
                   : {}
               }
-              bg={activeCategory === subCat.id.toString() ? undefined : "gray.100"}
-              color={activeCategory === subCat.id.toString() ? undefined : "gray.700"}
+              bg={
+                activeCategory === subCat.id.toString() ? undefined : "gray.100"
+              }
+              color={
+                activeCategory === subCat.id.toString() ? undefined : "gray.700"
+              }
               onClick={() => handleScrollToSection(subCat.id.toString())}
               _hover={{ opacity: 0.85 }}
             >
@@ -232,10 +282,14 @@ export const RoomServiceDetails = ({
                         : {}
                     }
                     bg={
-                      activeCategory === subCat.id.toString() ? undefined : "gray.100"
+                      activeCategory === subCat.id.toString()
+                        ? undefined
+                        : "gray.100"
                     }
                     color={
-                      activeCategory === subCat.id.toString() ? undefined : "gray.700"
+                      activeCategory === subCat.id.toString()
+                        ? undefined
+                        : "gray.700"
                     }
                     onClick={() => handleScrollToSection(subCat.id.toString())}
                     _hover={{ opacity: 0.85 }}
@@ -313,7 +367,10 @@ export const RoomServiceDetails = ({
                       boxShadow="sm"
                       bg="white"
                       transition="all 0.3s"
-                      _hover={{ transform: "translateY(-4px)", boxShadow: "md" }}
+                      _hover={{
+                        transform: "translateY(-4px)",
+                        boxShadow: "md",
+                      }}
                       border="1px solid"
                       borderColor="gray.100"
                     >
@@ -327,7 +384,12 @@ export const RoomServiceDetails = ({
                         />
                       )}
                       <Box p={4}>
-                        <Text fontSize="sm" fontWeight="700" mb={1} color="gray.800">
+                        <Text
+                          fontSize="sm"
+                          fontWeight="700"
+                          mb={1}
+                          color="gray.800"
+                        >
                           {item.name}
                         </Text>
                         {item.description && (
@@ -358,7 +420,11 @@ export const RoomServiceDetails = ({
                             >
                               <IoRemove />
                             </IconButton>
-                            <Text fontWeight="700" fontSize="sm" color="purple.700">
+                            <Text
+                              fontWeight="700"
+                              fontSize="sm"
+                              color="purple.700"
+                            >
                               {cartItem.quantity}
                             </Text>
                             <IconButton
@@ -447,7 +513,13 @@ export const RoomServiceDetails = ({
                     >
                       <IoClose />
                     </IconButton>
-                    <Text fontSize="sm" fontWeight="600" mb={1} color="gray.800" pr={6}>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="600"
+                      mb={1}
+                      color="gray.800"
+                      pr={6}
+                    >
                       {item.name}
                     </Text>
                     <Text fontSize="xs" color="gray.500" mb={2}>

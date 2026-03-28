@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import styles from "../ServiceDetails.module.css";
 import layoutStyles from "../ServiceDetailsLayout.module.css";
 import formStyles from "../ServiceDetailsForm.module.css";
-import { Box, Text, Flex, VStack, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Flex,
+  VStack,
+  Button,
+  Skeleton,
+  SkeletonText,
+} from "@chakra-ui/react";
 import { Accordion } from "@chakra-ui/react";
 import DefaultImage from "../../assets/images.png";
 import { createOrder } from "../../services/api/Instance";
@@ -19,7 +27,6 @@ export const HousekeepingDetails = ({
     name: string;
     description: string;
     id: any;
-    is_pos: any;
   }
 
   interface ServiceCategory {
@@ -42,7 +49,6 @@ export const HousekeepingDetails = ({
         name: item.name,
         description: item.description || "",
         id: item.id.toString(),
-        is_pos: item.is_pos,
       })),
     })) || [];
 
@@ -135,7 +141,6 @@ export const HousekeepingDetails = ({
         comments: comments,
         sub_booking_id: JSON.parse(localStorage.getItem("session") || "{}")
           ?.user_details?.sub_booking_id,
-        is_pos: selectedOptions[0]?.is_pos || false,
       };
 
       const response = await createOrder(formData);
@@ -168,7 +173,38 @@ export const HousekeepingDetails = ({
   };
 
   if (!subCategory || departments.length === 0) {
-    return <div className={styles.loading}>Loading...</div>;
+    return (
+      <div className={styles.detailsPage}>
+        <div className={styles.headerSection}>
+          <Skeleton height="300px" mb={6} />
+          <SkeletonText noOfLines={2} mb={8} />
+        </div>
+        <div className={layoutStyles.detailsLayout}>
+          <aside className={layoutStyles.departmentsSidebar}>
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} height="40px" mb={2} borderRadius="8px" />
+            ))}
+          </aside>
+          <div className={layoutStyles.optionsPanel}>
+            {[1, 2, 3].map((i) => (
+              <Box key={i} mb={6}>
+                <Skeleton height="50px" mb={4} borderRadius="8px" />
+                <VStack gap={3}>
+                  {[1, 2, 3].map((j) => (
+                    <Skeleton key={j} height="60px" borderRadius="8px" />
+                  ))}
+                </VStack>
+              </Box>
+            ))}
+          </div>
+          <aside className={layoutStyles.formPanel}>
+            <Skeleton height="200px" mb={4} borderRadius="8px" />
+            <SkeletonText noOfLines={5} mb={6} />
+            <Skeleton height="40px" borderRadius="8px" />
+          </aside>
+        </div>
+      </div>
+    );
   }
 
   return (

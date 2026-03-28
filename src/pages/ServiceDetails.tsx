@@ -27,18 +27,22 @@ const ServiceDetails = () => {
     fetchSubCategory();
   }, []);
 
-  if (slug === "house-keeping") {
+  const typeId = parseInt(slug || "0", 10);
+
+  if (typeId === 1) {
+    return <RoomServiceDetails service={subCategory} category={category} />;
+  }
+
+  if (typeId === 2) {
     return (
       <HousekeepingDetails subCategory={subCategory} category={category} />
     );
   }
 
-  if (slug === "room-service") {
-    return <RoomServiceDetails service={subCategory} category={category} />;
-  }
-
-  if (slug === "nearby-attractions") {
-    return <NearbyAttractionsDetails service={subCategory} category={category} />;
+  if (typeId === 3) {
+    return (
+      <NearbyAttractionsDetails service={subCategory} category={category} />
+    );
   }
 
   return (
