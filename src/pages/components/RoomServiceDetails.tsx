@@ -83,9 +83,15 @@ export const RoomServiceDetails = ({
     }
   };
 
+  const getItemPrice = (item: ApiItem) => {
+    return item.is_custom_amount
+      ? parseFloat(item.custom_amount)
+      : parseFloat(item.price);
+  };
+
   const handleAddToCart = (item: ApiItem) => {
     const itemId = item.id.toString();
-    const price = parseFloat(item.price);
+    const price = getItemPrice(item);
     setCart((prevCart) => {
       const existing = prevCart.find((i) => i.id === itemId);
       if (existing) {
@@ -399,7 +405,7 @@ export const RoomServiceDetails = ({
                         )}
                         <Text fontSize="xs" color="gray.500" mb={3}>
                           <Text as="span" fontWeight="700" color="gray.700">
-                            PKR {parseFloat(item.price).toLocaleString()}
+                            PKR {getItemPrice(item).toLocaleString()}
                           </Text>
                         </Text>
 

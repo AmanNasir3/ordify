@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import styles from "./ServiceDetails.module.css";
 import layoutStyles from "./ServiceDetailsLayout.module.css";
@@ -12,13 +12,18 @@ const ServiceDetails = () => {
   const { state } = useLocation();
   const category = state?.category || null;
   const [subCategory, setSubCategory] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSubCategory = async () => {
       try {
-        const response = await getSubcategoriesByCategory(category?.id);
-        if (response.status === 200 && response.data.data) {
-          setSubCategory(response.data.data);
+        if (category?.id) {
+          const response = await getSubcategoriesByCategory(category.id);
+          if (response.status === 200 && response.data.data) {
+            setSubCategory(response.data.data);
+          }
+        } else {
+          navigate("/");
         }
       } catch (error) {
         console.error("Error fetching subcategories:", error);
