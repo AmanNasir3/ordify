@@ -63,6 +63,24 @@ const Header = ({ verificationComplete }: HeaderProps) => {
           )}
         </Flex>
         <div className={styles.actions}>
+          <Box>
+            <Text
+              color="gray.300"
+              fontSize={{ base: "sm", md: "md" }}
+              letterSpacing="wide"
+            >
+              Welcome back 👋
+            </Text>
+
+            <Text
+              color="white"
+              fontSize={{ base: "md", md: "lg", lg: "xl" }}
+              fontWeight="bold"
+              lineHeight="short"
+            >
+              {session?.user_details?.guest_name || "Guest"}
+            </Text>
+          </Box>
           {/* <button className={styles.iconBtn} aria-label="Toggle dark mode">
             <IoMoonOutline />
           </button>
