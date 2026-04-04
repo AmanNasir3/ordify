@@ -69,7 +69,7 @@ const Header = ({ verificationComplete }: HeaderProps) => {
               fontSize={{ base: "sm", md: "md" }}
               letterSpacing="wide"
             >
-              Welcome back 👋
+              Welcome 👋
             </Text>
 
             <Text
