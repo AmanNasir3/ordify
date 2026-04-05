@@ -92,4 +92,11 @@ export const fetchHotelLogoForHeader = async () => {
   });
 };
 
+export const getGuestOrders = (subBookingId: number | string) => {
+  return Instance({
+    method: "GET",
+    url: `/ordify/orders/${subBookingId}`,
+  });
+};
+
 export default Instance;
