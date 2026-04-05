@@ -165,7 +165,7 @@ console.log({orders});
                 fontSize={{ base: "sm", md: "md" }}
                 letterSpacing="wide"
               >
-                Welcome back 👋
+                Welcome 👋
               </Text>
               <Text
                 color="white"
