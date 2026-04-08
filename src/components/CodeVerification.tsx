@@ -25,7 +25,7 @@ const CodeVerification = ({ isOpen, onClose }: CodeVerificationProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "");
+   const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
     setCode(value);
     if (error) setError("");
   };
@@ -118,7 +118,6 @@ const CodeVerification = ({ isOpen, onClose }: CodeVerificationProps) => {
                 </Text>
                 <Input
                   type="text"
-                  inputMode="numeric"
                   value={code}
                   onChange={handleInputChange}
                   placeholder="Enter code"
